@@ -31,6 +31,7 @@ const OgloszeniaPage = () => {
                             <li key={ogloszenie._id}>
                                 <Link href={`/ogloszenia/${ogloszenie._id}`}>
                                     {ogloszenie.tytul || JSON.stringify(ogloszenie)}
+                                    {ogloszenie.cena ? ` - ${ogloszenie.cena} zł` : ""}
                                 </Link>
                             </li>
                         ))}

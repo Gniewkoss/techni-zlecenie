@@ -1,12 +1,43 @@
-const OgloszeniePage = () => {
-    return ( 
-        <div>
-            <h1>Ogloszenie</h1>
-            <ul>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit, enim voluptates? Porro adipisci sequi, eaque in eveniet ex velit officia odit libero modi nobis aperiam molestiae est sapiente labore nam.</li>
-            </ul>
-        </div>
-     );
+import Link from "next/link";
+import { MongoClient } from "mongodb";
+import { ObjectId } from "mongodb";
+import clientPromise from "@/lib/mongodb";
+
+interface Ogloszenie {
+  _id: string;
+  tytul: string;
+  cena: number;
+  opis: string;
 }
 
-export default OgloszeniePage;
+type Props = {
+  params: { id: string };
+};
+
+export default async function OgloszeniePage({ params }: Props) {
+  const client: MongoClient = await clientPromise;
+  const db = client.db("Zlecenia");
+  const ogloszenie = await db
+    .collection("ogloszenia")
+    .findOne({ _id: new ObjectId(params.id) });
+
+  if (!ogloszenie) {
+    return (
+      <div>
+        <h1>Ogloszenie Page</h1>
+        <p>Nie znaleziono ogłoszenia o podanym ID.</p>
+        <Link href="/ogloszenia">Powrót do listy ogłoszeń</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h1>Ogloszenie Page</h1>
+      <h2>{ogloszenie.tytul}</h2>
+      <p>{ogloszenie.opis}</p>
+      <p>Cena: {ogloszenie.cena} zł</p>
+      <Link href="/ogloszenia">Powrót do listy ogłoszeń</Link>
+    </div>
+  );
+}
