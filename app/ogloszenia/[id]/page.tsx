@@ -37,7 +37,9 @@ export default async function OgloszeniePage({ params }: Props) {
       <h2>{ogloszenie.tytul}</h2>
       <p>{ogloszenie.opis}</p>
       <p>Cena: {ogloszenie.cena} zł</p>
+      <Link href={`/ogloszenia/${ogloszenie._id}/napisz`}>Napisz wiadomość</Link>
       <Link href="/ogloszenia">Powrót do listy ogłoszeń</Link>
+
     </div>
   );
 }
