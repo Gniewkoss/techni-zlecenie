@@ -28,7 +28,11 @@ const OgloszeniaPage = () => {
                 ) : (
                     <ul>
                         {ogloszenia.map((ogloszenie) => (
-                            <li key={ogloszenie._id}>{ogloszenie.tytul || JSON.stringify(ogloszenie)}</li>
+                            <li key={ogloszenie._id}>
+                                <Link href={`/ogloszenia/${ogloszenie._id}`}>
+                                    {ogloszenie.tytul || JSON.stringify(ogloszenie)}
+                                </Link>
+                            </li>
                         ))}
                     </ul>
                 )}
