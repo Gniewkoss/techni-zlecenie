@@ -5,6 +5,27 @@ export default async function handler(req, res) {
   const client = await clientPromise;
   const db = client.db("Zlecenia");
 
+  if (req.method === "DELETE") {
+    const { id } = req.query;
+    if (!id) {
+      res.status(400).json({ error: "Brak id ogłoszenia" });
+      return;
+    }
+    try {
+      const result = await db
+        .collection("ogloszenia")
+        .deleteOne({ _id: new ObjectId(id) });
+      if (result.deletedCount === 1) {
+        res.status(200).json({ success: true });
+      } else {
+        res.status(404).json({ error: "Ogłoszenie nie znalezione" });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+    return;
+  }
+
   if (req.method === "POST") {
     try {
       const { tytul, cena, opis, userId } = req.body;
@@ -24,12 +45,16 @@ export default async function handler(req, res) {
 
   if (req.method === "GET") {
     try {
+      const { userId } = req.query;
+      let filter = {};
+      if (userId) {
+        filter = { userId: userId };
+      }
       const ogloszenia = await db
         .collection("ogloszenia")
-        .find(
-          {},
-          { projection: { _id: 1, tytul: 1, cena: 1, opis: 1, userId: 1 } }
-        )
+        .find(filter, {
+          projection: { _id: 1, tytul: 1, cena: 1, opis: 1, userId: 1 },
+        })
         .toArray();
       // Pobierz username dla każdego ogloszenia
       const users = db.collection("uzytkownicy");

@@ -6,10 +6,20 @@ const OgloszeniaPage = () => {
     const [ogloszenia, setOgloszenia] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [loggedIn, setLoggedIn] = useState(false);
+    const [username, setUsername] = useState("");
 
     useEffect(() => {
         const userId = localStorage.getItem("userId");
         setLoggedIn(!!userId);
+
+        // Fetch username for logged-in user
+        if (userId) {
+            fetch(`/api/uzytkownicy?userId=${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    setUsername(data.username || "");
+                });
+        }
 
         fetch("/api/ogloszenia")
             .then(res => res.json())
@@ -38,6 +48,9 @@ const OgloszeniaPage = () => {
 
     return (
         <div>
+            <Link href={`/ogloszenia/panelUzytkownika`}>
+                <button>{username}</button>
+            </Link>
             <h1>Ogloszenia Page</h1>
             <button style={{marginBottom: '1rem'}} onClick={handleLogout}>Wyloguj</button>
             <Link href="/ogloszenia/dodajOgloszenie">Dodaj Ogloszenie</Link>
@@ -48,10 +61,13 @@ const OgloszeniaPage = () => {
                 ) : (
                     <ul>
                         {ogloszenia.map((ogloszenie) => (
-                            <li key={ogloszenie._id}>
-                                <strong>{ogloszenie.tytul}</strong> — {ogloszenie.cena} zł<br />
-                                {ogloszenie.opis}<br />
-                                <span style={{fontSize: '0.95em', color: '#888'}}>Autor: {ogloszenie.username || "(nieznany)"}</span>
+                            <li key={ogloszenie._id} style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+                                <a href={`/ogloszenia/${ogloszenie._id}`} style={{textDecoration: 'none', color: '#2a4d7a'}}>
+                                    <strong>{ogloszenie.tytul}</strong> — {ogloszenie.cena} zł
+                                </a>
+                                <button style={{fontSize: '0.95em', padding: '0.3em 0.8em'}}>
+                                    {ogloszenie.username || "(nieznany)"}
+                                </button>
                             </li>
                         ))}
                     </ul>

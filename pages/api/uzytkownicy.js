@@ -1,7 +1,31 @@
 import clientPromise from "../../lib/mongodb";
 import bcrypt from "bcryptjs";
+import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
+  if (req.method === "GET") {
+    const { userId } = req.query;
+    if (!userId) {
+      res.status(400).json({ error: "Brak userId" });
+      return;
+    }
+    try {
+      const client = await clientPromise;
+      const db = client.db("Zlecenia");
+      const user = await db
+        .collection("uzytkownicy")
+        .findOne({ _id: new ObjectId(userId) });
+      if (!user) {
+        res.status(404).json({ error: "Nie znaleziono użytkownika" });
+        return;
+      }
+      res.status(200).json({ username: user.username });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+    return;
+  }
+
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
