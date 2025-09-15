@@ -12,10 +12,11 @@ const DodajOgloszeniePage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    const userId = localStorage.getItem("userId");
     const res = await fetch("/api/ogloszenia", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tytul, cena: Number(cena), opis }),
+      body: JSON.stringify({ tytul, cena: Number(cena), opis, userId }),
     });
     setLoading(false);
     if (res.ok) {
